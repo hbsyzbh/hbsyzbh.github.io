@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>宝骅的博客</title>
+        <!--引入外部的css文件-->
+        <link rel="stylesheet" href="bootstrap5/bootstrap.css" />
+        <!--引入外部的js文件-->
+        <script type="text/javascript" src="bootstrap5/bootstrap.js" ></script>
+        <style>
+        </style>
+    </head>
+    <body>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col"> </th>
+              <th scope="col">raw Unicode</th>
+              <th scope="col">UTF-8</th>
+              <th scope="col">Shown</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"> </th>
+              <td>U+<input id="raw_unicode" value="233B4" oninput="onrawUnicodeChanged()"></td>
+              <td id="utf8">F0 A3 8E B4</td>
+              <td id="output">&#144308(144308)</td>
+            </tr>
+
+          </tbody>
+        </table>
+        <script type="text/javascript">
+            function onrawUnicodeChanged() {
+                var suffix_mod = Math.pow(2,6);
+                var raw_value = parseInt(raw_unicode.value, 16);
+                
+                if (isNaN(raw_value)) {
+                    return;
+                }
+                //console.log(raw_value);
+                var utf8 = document.getElementById("utf8");
+                var output = document.getElementById("output");
+                output.innerHTML="&#" + raw_value + " (" + raw_value + ")";
+                var result = "";
+                if (raw_value >= 0x10000) {
+                    var tail1 = raw_value % suffix_mod;
+                            raw_value/=suffix_mod;
+                     var tail2 = raw_value % suffix_mod;
+                            raw_value/=suffix_mod;
+                     var tail3 = raw_value % suffix_mod;
+                    var head = raw_value / suffix_mod;
+                    
+                    result = Math.floor(head + 0xF0).toString(16) + " " + Math.floor(tail3 + 0x80).toString(16)+
+                            " " + Math.floor(tail2 + 0x80).toString(16)+
+                            " " + Math.floor(tail1 + 0x80).toString(16);  
+                } else if (raw_value >= 0x0800) {
+                     var tail1 = raw_value % suffix_mod;
+                     raw_value/=suffix_mod;
+                     var tail2 = raw_value % suffix_mod;
+                    var head = raw_value / suffix_mod;
+                    
+                    result = Math.floor(head + 0xE0).toString(16) + " " + Math.floor(tail2 + 0x80).toString(16)+
+                            " " + Math.floor(tail1 + 0x80).toString(16);                
+                } else if (raw_value >= 0x0080) {
+                    var tail = raw_value % suffix_mod;
+                    var head = raw_value / suffix_mod;
+                    
+                    result = Math.floor(head + 0xC0).toString(16) + " " + Math.floor(tail + 0x80).toString(16);
+                } else {
+                    result = raw_value.toString(16);
+                }
+                
+                utf8.innerHTML = result.toUpperCase();
+            }
+        </script>
+        
+   <!--   
+   Char. number range  |        UTF-8 octet sequence
+      (hexadecimal)    |              (binary)
+   --------------------+---------------------------------------------
+   0000 0000-0000 007F | 0xxxxxxx
+   0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+   0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+   0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+   Encoding a character to UTF-8 proceeds as follows:
+
+   1.  Determine the number of octets required from the character number
+       and the first column of the table above.  It is important to note
+       that the rows of the table are mutually exclusive, i.e., there is
+       only one valid way to encode a given character.
+
+   2.  Prepare the high-order bits of the octets as per the second
+       column of the table.
+
+   3.  Fill in the bits marked x from the bits of the character number,
+       expressed in binary.  Start by putting the lowest-order bit of
+       the character number in the lowest-order position of the last
+       octet of the sequence, then put the next higher-order bit of the
+       character number in the next higher-order position of that octet,
+       etc.  When the x bits of the last octet are filled in, move on to
+       the next to last octet, then to the preceding one, etc. until all
+       x bits are filled in.
+     -->        
+    </body>
+</html>
