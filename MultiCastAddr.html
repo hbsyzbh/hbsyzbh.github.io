@@ -96,11 +96,82 @@
           <tbody>
             <tr>
               <th scope="row"> </th>
-              <td id="ipv6">FF01::1</td>
+              <td><input id="ipv6" value="FF01::1" oninput="onipv6Changed()"></td>
               <td id="V6MacAddr">33 33 00 00 00 01</td>
             </tr>
           </tbody>
         </table>
-        </div></div>
+        </div>
+        <!--
+                An IPv6 packet with a multicast destination address DST, consisting
+                of the sixteen octets DST[1] through DST[16], is transmitted to the
+                Ethernet multicast address whose first two octets are the value 3333
+                hexadecimal and whose last four octets are the last four octets of
+                DST.
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                  |0 0 1 1 0 0 1 1|0 0 1 1 0 0 1 1|
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                  |   DST[13]     |   DST[14]     |
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                  |   DST[15]     |   DST[16]     |
+                  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        comment -->
+        <script type="text/javascript">
+            function get2ByteHex(v) {
+                var v_int = parseInt(v);
+                
+                if (v_int < 16) {
+                    return "0" + v_int.toString(16).toUpperCase(); 
+                }
+                
+                return v_int.toString(16).toUpperCase();
+            }
+            
+            function calcIpv6MultiCastAddr(ip) {
+                var ipv6addr = [0,0,0,0,0,0,0,0];
+                var ipArray = ip.split(":");
+                if(( ipArray.length < 3) || (( ipArray.length > 8))) {
+                    return "无效ip(v6) 仅支持:分隔";
+                } else if (ipArray.length != 8) {
+                    if (ip.indexOf("::") < 0) {                 
+                        return "无效ip(v6) 长度不够";
+                    }
+                }
+
+                var j = 0;
+                for(var i = 0; i < ipArray.length; i++) {
+                    if (ipArray[i].trim() == "") {
+                        break;
+                    } else {
+                        ipv6addr[j++] = parseInt(ipArray[i], 16);
+                    }
+                }
+                
+                if (j != 8) {
+                    var j = 7;
+                    for(var i = ipArray.length - 1; i > 0 ; i--) {
+                        if (ipArray[i].trim() == "") {
+                            break;
+                        } else {
+                            ipv6addr[j--] = parseInt(ipArray[i], 16);
+                        }
+                    }
+                }                
+               
+               console.log(ipv6addr);
+               var result = "33 33";
+               for (var i = 6; i <8; i++) {
+                   result +=  " " + get2ByteHex(ipv6addr[i] / 256) +  " " + get2ByteHex(ipv6addr[i] % 256);
+               }
+
+                return result;
+            }
+            
+            function onipv6Changed() {
+                V6MacAddr.innerText = calcIpv6MultiCastAddr(ipv6.value);
+            }
+        </script>
+        
+        </div><!-- end of row -->
     </body>
 </html>
