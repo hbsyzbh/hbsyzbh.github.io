@@ -249,7 +249,11 @@
                         }
                     }                
 
-                   console.log(ipv6addr);
+                   //console.log(ipv6addr);
+                   if (parseInt(ipv6addr[0] / 256) != 0xFF) {
+                       return "无效ip(v6) 组播地址";
+                   }
+                   
                    var result = "33 33";
                    for (var i = 6; i <8; i++) {
                        result +=  " " + get2ByteHex(ipv6addr[i] / 256) +  " " + get2ByteHex(ipv6addr[i] % 256);
