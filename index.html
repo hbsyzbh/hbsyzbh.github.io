@@ -32,7 +32,7 @@
             function onrawUnicodeChanged() {
                 var suffix_mod = Math.pow(2,6);
                 var raw_value = parseInt(raw_unicode.value, 16);
-                
+
                 if (isNaN(raw_value)) {
                     return;
                 }
@@ -48,32 +48,32 @@
                             raw_value/=suffix_mod;
                      var tail3 = raw_value % suffix_mod;
                     var head = raw_value / suffix_mod;
-                    
+
                     result = Math.floor(head + 0xF0).toString(16) + " " + Math.floor(tail3 + 0x80).toString(16)+
                             " " + Math.floor(tail2 + 0x80).toString(16)+
-                            " " + Math.floor(tail1 + 0x80).toString(16);  
+                            " " + Math.floor(tail1 + 0x80).toString(16);
                 } else if (raw_value >= 0x0800) {
                      var tail1 = raw_value % suffix_mod;
                      raw_value/=suffix_mod;
                      var tail2 = raw_value % suffix_mod;
                     var head = raw_value / suffix_mod;
-                    
+
                     result = Math.floor(head + 0xE0).toString(16) + " " + Math.floor(tail2 + 0x80).toString(16)+
-                            " " + Math.floor(tail1 + 0x80).toString(16);                
+                            " " + Math.floor(tail1 + 0x80).toString(16);
                 } else if (raw_value >= 0x0080) {
                     var tail = raw_value % suffix_mod;
                     var head = raw_value / suffix_mod;
-                    
+
                     result = Math.floor(head + 0xC0).toString(16) + " " + Math.floor(tail + 0x80).toString(16);
                 } else {
                     result = raw_value.toString(16);
                 }
-                
+
                 utf8.innerHTML = result.toUpperCase();
             }
         </script>
-        
-   <!--   
+
+   <!--
    Char. number range  |        UTF-8 octet sequence
       (hexadecimal)    |              (binary)
    --------------------+---------------------------------------------
@@ -100,7 +100,7 @@
        etc.  When the x bits of the last octet are filled in, move on to
        the next to last octet, then to the preceding one, etc. until all
        x bits are filled in.
-     -->       
+     -->
             </li>
             <li>MultiCastCalc
                 <div class="row">
@@ -142,7 +142,7 @@
                         var v_int = parseInt(v);
 
                         if (v_int < 16) {
-                            return "0" + v_int.toString(16).toUpperCase(); 
+                            return "0" + v_int.toString(16).toUpperCase();
                         }
 
                         return v_int.toString(16).toUpperCase();
@@ -212,7 +212,7 @@
                     var v_int = parseInt(v);
 
                     if (v_int < 16) {
-                        return "0" + v_int.toString(16).toUpperCase(); 
+                        return "0" + v_int.toString(16).toUpperCase();
                     }
 
                     return v_int.toString(16).toUpperCase();
@@ -224,7 +224,7 @@
                     if(( ipArray.length < 3) || (( ipArray.length > 8))) {
                         return "无效ip(v6) 仅支持:分隔";
                     } else if (ipArray.length != 8) {
-                        if (ip.indexOf("::") < 0) {                 
+                        if (ip.indexOf("::") < 0) {
                             return "无效ip(v6) 长度不够";
                         }
                     }
@@ -247,13 +247,13 @@
                                 ipv6addr[j--] = parseInt(ipArray[i], 16);
                             }
                         }
-                    }                
+                    }
 
                    //console.log(ipv6addr);
                    if (parseInt(ipv6addr[0] / 256) != 0xFF) {
                        return "无效ip(v6) 组播地址";
                    }
-                   
+
                    var result = "33 33";
                    for (var i = 6; i <8; i++) {
                        result +=  " " + get2ByteHex(ipv6addr[i] / 256) +  " " + get2ByteHex(ipv6addr[i] % 256);
@@ -269,7 +269,280 @@
 
             </div><!-- end of row -->
             </li>
+
+            <li><p>Proportion <button onclick="ProportionExample()">例子(example)</button></p>
+                <div>
+                    <input value="name" id="proportion_title"><input type="number" value="1" id="proportion_part"><button onclick="addProprtion()">增加</button>
+                </div>
+                <div style="display:flex">
+                    <canvas id="canvas_out">
+                    </canvas>
+                    <pre id="pre_out" style="margin:auto">
+                    </pre>
+                </div>
+                <script type="text/javascript">
+                var Proportion = [];
+                function refreshProprtion(cur) {
+                        var textGraphWidth = 10;
+
+                        for(var i = 0; i < cur.length; i++) {
+                                if (textGraphWidth < cur[i].title.length) {
+                                        textGraphWidth = cur[i].title.length + 2;
+                                }
+                        }
+
+                        var textGraph = textGraphHead(textGraphWidth);
+                        var c=document.getElementById("canvas_out");
+
+                        var total = 0;
+                        for(var i = 0; i < cur.length; i++) {
+                                total += parseInt(cur[i].value);
+                        }
+
+                        c.height = total * 20;
+
+                        var ctx=c.getContext("2d");
+                        ctx.font="12px Arial";
+                        ctx.textBaseline = 'middle'; //设置文本的垂直对齐方式
+                        ctx.textAlign = 'center';//设置文本的水平对齐方式
+                        var offset = 0;
+                        for(var i = 0; i < cur.length; i++) {
+                                var curPos = parseInt(cur[i].value);
+
+                                if (cur[i].color) {
+                                        ctx.fillStyle=cur[i].color;
+                                        ctx.fillRect(0, 20*offset,c.width, 20*curPos);
+                                }
+
+                                ctx.fillStyle="black";
+                                ctx.fillText(cur[i].title, c.width/2, 20*(offset+curPos/2));
+                                ctx.rect(0, 20*offset,c.width, 20*curPos);
+                                ctx.stroke();
+
+                                textGraph += textGraphItem(textGraphWidth, curPos, cur[i].title);
+                                textGraph += textGraphHead(textGraphWidth);
+                                offset += curPos;
+                        }
+
+                        pre_out.innerText = textGraph;
+                }
+
+                function textGraphHead(len) {
+                        var tmp = "";
+                        for(var i = 0; i <  len; i++) {
+                                tmp += "-";
+                        }
+
+                        return tmp + "\n";
+                }
+
+                function textGraphItem(len, height, text) {
+                        var tmp = "";
+                        var showstr = text.substr(0, len - 2);
+                        var padding = Math.ceil((len - showstr.length - 2) / 2);
+
+                        if (height >= 2) {
+                                for(var i = 0; i <	height/2; i++) {
+                                        tmp += textGraphItem(len, 1, "");
+                                }
+                        }
+
+                        tmp += "|";
+                        for(var i = 0; i < padding; i++) {
+                                tmp += " ";
+                        }
+
+                        tmp += showstr;
+
+                        for(var i = 0; i < len - showstr.length - 2 - padding; i++) {
+                                tmp += " ";
+                        }
+                        tmp += "|\n";
+
+                        if (height >= 2) {
+                                for(var i = 0; i <	Math.floor((height-1)/2); i++) {
+                                        tmp += textGraphItem(len, 1, "");
+                                }
+                        }
+
+                        return tmp;
+                }
+
+                function addProprtion() {
+                    Proportion.push({"title":proportion_title.value, "value":proportion_part.value, "color":getRadomColor()});
+                    refreshProprtion(Proportion);
+                }
+
+                function ProportionExample() {
+                    var example = [
+                        {"title":"Size 1", "value":1},
+                        {"title":"long title Size 3", "value":3},
+                        {"title":"Size 2", "value":2},
+                        {"title":"Size 5", "value":5},
+                                        ];
+                    refreshProprtion(example);
+                }
+
+                </script>
+            </li>
+
         </ul>
         <div>博文</div>
+
     </body>
+    <script type="text/javascript">
+    function getRadomColor()
+    {
+            var i;
+
+            do {
+                    i = Math.floor(Math.random() * ColorNames.length);
+            } while(i >= ColorNames.length)
+
+            return ColorNames[i];
+    }
+
+    var ColorNames = [
+    "AliceBlue",
+    "AntiqueWhite",
+    "Aqua",
+    "Aquamarine",
+    "Azure",
+    "Beige",
+    "Bisque",
+    "Black",
+    "BlanchedAlmond",
+    "Blue",
+    "BlueViolet",
+    "Brown",
+    "BurlyWood",
+    "CadetBlue",
+    "Chartreuse",
+    "Chocolate",
+    "Coral",
+    "CornflowerBlue",
+    "Cornsilk",
+    "Crimson",
+    "Cyan",
+    "DarkBlue",
+    "DarkCyan",
+    "DarkGoldenRod",
+    "DarkGray",
+    "DarkGreen",
+    "DarkKhaki",
+    "DarkMagenta",
+    "DarkOliveGreen",
+    "DarkOrange",
+    "DarkOrchid",
+    "DarkRed",
+    "DarkSalmon",
+    "DarkSeaGreen",
+    "DarkSlateBlue",
+    "DarkSlateGray",
+    "DarkTurquoise",
+    "DarkViolet",
+    "DeepPink",
+    "DeepSkyBlue",
+    "DimGray",
+    "DodgerBlue",
+    "FireBrick",
+    "FloralWhite",
+    "ForestGreen",
+    "Fuchsia",
+    "Gainsboro",
+    "GhostWhite",
+    "Gold",
+    "GoldenRod",
+    "Gray",
+    "Green",
+    "GreenYellow",
+    "HoneyDew",
+    "HotPink",
+    "IndianRed",
+    "Indigo",
+    "Ivory",
+    "Khaki",
+    "Lavender",
+    "LavenderBlush",
+    "LawnGreen",
+    "LemonChiffon",
+    "LightBlue",
+    "LightCoral",
+    "LightCyan",
+    "LightGoldenRodYellow",
+    "LightGray",
+    "LightGreen",
+    "LightPink",
+    "LightSalmon",
+    "LightSeaGreen",
+    "LightSkyBlue",
+    "LightSlateGray",
+    "LightSteelBlue",
+    "LightYellow",
+    "Lime",
+    "LimeGreen",
+    "Linen",
+    "Magenta",
+    "Maroon",
+    "MediumAquaMarine",
+    "MediumBlue",
+    "MediumOrchid",
+    "MediumPurple",
+    "MediumSeaGreen",
+    "MediumSlateBlue",
+    "MediumSpringGreen",
+    "MediumTurquoise",
+    "MediumVioletRed",
+    "MidnightBlue",
+    "MintCream",
+    "MistyRose",
+    "Moccasin",
+    "NavajoWhite",
+    "Navy",
+    "OldLace",
+    "Olive",
+    "OliveDrab",
+    "Orange",
+    "OrangeRed",
+    "Orchid",
+    "PaleGoldenRod",
+    "PaleGreen",
+    "PaleTurquoise",
+    "PaleVioletRed",
+    "PapayaWhip",
+    "PeachPuff",
+    "Peru",
+    "Pink",
+    "Plum",
+    "PowderBlue",
+    "Purple",
+    "Red",
+    "RosyBrown",
+    "RoyalBlue",
+    "SaddleBrown",
+    "Salmon",
+    "SandyBrown",
+    "SeaGreen",
+    "SeaShell",
+    "Sienna",
+    "Silver",
+    "SkyBlue",
+    "SlateBlue",
+    "SlateGray",
+    "Snow",
+    "SpringGreen",
+    "SteelBlue",
+    "Tan",
+    "Teal",
+    "Thistle",
+    "Tomato",
+    "Turquoise",
+    "Violet",
+    "Wheat",
+    "White",
+    "WhiteSmoke",
+    "Yellow",
+    "YellowGreen"
+    ];
+    </script>
 </html>
