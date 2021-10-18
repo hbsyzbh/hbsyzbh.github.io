@@ -312,33 +312,43 @@
                     var shown_index = 0;
 
                     window.onload = function (){
-                            var item_color = document.getElementById("item_color");
+						var item_color = document.getElementById("item_color");
 
-                            item_color.options.add(new Option("",""));
-                            for(var i = 0; i < ColorNames.length; i++) {
-                                    item_color.options.add(new Option(ColorNames[i],ColorNames[i]));
-                                    item_color.options[i+1].style.background = ColorNames[i];
-                            }
+						item_color.options.add(new Option("",""));
+						for(var i = 0; i < ColorNames.length; i++) {
+								item_color.options.add(new Option(ColorNames[i],ColorNames[i]));
+								item_color.options[i+1].style.background = ColorNames[i];
+						}
                     };
 
                     canvas_out.onmouseup = function (e) {
-                            //console.log(e.offsetX, e.offsetY);
-                            if (! shown) {
-                                    return;
-                            }
+						//console.log(e.offsetX, e.offsetY);
+						//console.log(e.which);
 
-                            var offset = 0;
-                            for(var i = 0; i < shown.length; i++) {
-                                    offset += parseInt(shown[i].value);
-
-                                    if ((offset * itemHeight) > e.offsetY) {
-                                            //console.log(shown[i]);
-                                            shown_index = i;
-                                            changeItem(shown[i]);
-                                            break;
-                                    }
-                            }
+						switch(e.which) {
+							case 1:
+								checkchangeItem(e);
+								break;
+						}
                     }
+
+					function checkchangeItem(e) {
+						if (! shown) {
+							   return;
+						}
+
+						var offset = 0;
+						for(var i = 0; i < shown.length; i++) {
+							offset += parseInt(shown[i].value);
+
+							if ((offset * itemHeight) > e.offsetY) {
+									//console.log(shown[i]);
+									shown_index = i;
+									changeItem(shown[i]);
+									break;
+							}
+						}
+					}
 
                     function item_color_change() {
                             item_color.style.background  = item_color.value;
@@ -362,7 +372,7 @@
                             });
 
                             myModal.show();
-                            console.log(item);
+                            //console.log(item);
                     }
 
                     function submit_change() {
@@ -442,7 +452,7 @@
                         var padding = Math.ceil((len - showstr.length - 2) / 2);
 
                         if (height >= 2) {
-                                for(var i = 0; i <	height/2; i++) {
+                                for(var i = 0; i < Math.floor(height/2); i++) {
                                         tmp += textGraphItem(len, 1, "");
                                 }
                         }
