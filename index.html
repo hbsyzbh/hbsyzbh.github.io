@@ -6,6 +6,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <script src="bootstrap5\bootstrap.js"></script>
+        <link href="bootstrap5\bootstrap.css" rel="stylesheet">
         <div>小工具</div>
         <ul>
             <li>UTF-8Calc
@@ -280,11 +282,108 @@
                     <pre id="pre_out" style="margin:auto">
                     </pre>
                 </div>
-                <script type="text/javascript">
-                var Proportion = [];
-                function refreshProprtion(cur) {
-                        var textGraphWidth = 10;
+                <!-- 模态框（Modal） -->
+                <div class="modal" tabindex="-1" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">修改参数</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label>标签</label><input id="item_name">
+                                <label>占比</label><input type="number" id="item_size">
+                                <label>颜色</label><select id="item_color" onchange="item_color_change();"></select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary" onclick="submit_change()">修改</button>
+                                <button type="button" class="btn btn-primary" onclick="delete_item()">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <script type="text/javascript">
+                    var itemHeight = 20;
+                    var Proportion = [];
+                    var shown = null;
+                    var myModal = null;
+                    var shown_index = 0;
+
+                    window.onload = function (){
+                            var item_color = document.getElementById("item_color");
+
+                            item_color.options.add(new Option("",""));
+                            for(var i = 0; i < ColorNames.length; i++) {
+                                    item_color.options.add(new Option(ColorNames[i],ColorNames[i]));
+                                    item_color.options[i+1].style.background = ColorNames[i];
+                            }
+                    };
+
+                    canvas_out.onmouseup = function (e) {
+                            //console.log(e.offsetX, e.offsetY);
+                            if (! shown) {
+                                    return;
+                            }
+
+                            var offset = 0;
+                            for(var i = 0; i < shown.length; i++) {
+                                    offset += parseInt(shown[i].value);
+
+                                    if ((offset * itemHeight) > e.offsetY) {
+                                            //console.log(shown[i]);
+                                            shown_index = i;
+                                            changeItem(shown[i]);
+                                            break;
+                                    }
+                            }
+                    }
+
+                    function item_color_change() {
+                            item_color.style.background  = item_color.value;
+                    }
+
+                    function changeItem(item) {
+                            item_name.value = item.title;
+                            item_size.value = item.value;
+                            if (item.color) {
+                                    item_color.value = item.color;
+                            } else {
+                                    item_color.value = "";
+                            }
+
+                            item_color.style.background  = item_color.value;
+
+                            myModal = new bootstrap.Modal(document.getElementById('myModal'), {
+                                    keyboard: true,
+                                    focus:true,
+                                    backdrop:"static"
+                            });
+
+                            myModal.show();
+                            console.log(item);
+                    }
+
+                    function submit_change() {
+                            myModal.hide();
+
+                            shown[shown_index].title = item_name.value;
+                            shown[shown_index].value = item_size.value;
+                            shown[shown_index].color = item_color.value;
+
+                            refreshProprtion(shown);
+                    }
+
+                    function delete_item() {
+                            myModal.hide();
+                            shown.splice(shown_index, 1);
+                            refreshProprtion(shown);
+                    }
+
+                    function refreshProprtion(cur) {
+                        var textGraphWidth = 10;
+						shown = cur;
                         for(var i = 0; i < cur.length; i++) {
                                 if (textGraphWidth < cur[i].title.length) {
                                         textGraphWidth = cur[i].title.length + 2;
@@ -299,7 +398,8 @@
                                 total += parseInt(cur[i].value);
                         }
 
-                        c.height = total * 20;
+                        c.height = total * itemHeight;
+						c.style.height = c.height + "px";
 
                         var ctx=c.getContext("2d");
                         ctx.font="12px Arial";
@@ -311,12 +411,12 @@
 
                                 if (cur[i].color) {
                                         ctx.fillStyle=cur[i].color;
-                                        ctx.fillRect(0, 20*offset,c.width, 20*curPos);
+                                        ctx.fillRect(0, itemHeight*offset,c.width, itemHeight*curPos);
                                 }
 
                                 ctx.fillStyle="black";
-                                ctx.fillText(cur[i].title, c.width/2, 20*(offset+curPos/2));
-                                ctx.rect(0, 20*offset,c.width, 20*curPos);
+                                ctx.fillText(cur[i].title, c.width/2, itemHeight*(offset+curPos/2));
+                                ctx.rect(0, itemHeight*offset,c.width, itemHeight*curPos);
                                 ctx.stroke();
 
                                 textGraph += textGraphItem(textGraphWidth, curPos, cur[i].title);
@@ -325,7 +425,7 @@
                         }
 
                         pre_out.innerText = textGraph;
-                }
+                    }
 
                 function textGraphHead(len) {
                         var tmp = "";
@@ -379,9 +479,9 @@
                         {"title":"long title Size 3", "value":3},
                         {"title":"Size 2", "value":2},
                         {"title":"Size 5", "value":5},
-                                        ];
-                    refreshProprtion(example);
-                }
+                        ];
+                        refreshProprtion(example);
+                    }
 
                 </script>
             </li>
