@@ -6,8 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <script src="bootstrap5\bootstrap.js"></script>
-        <link href="bootstrap5\bootstrap.css" rel="stylesheet">
+		<script src="jquery.min.js"></script>
+        <script src="bootstrap3\js\bootstrap.js"></script>
+        <link href="bootstrap3\css\bootstrap.css" rel="stylesheet">
         <div>小工具</div>
         <ul>
             <li>UTF-8Calc
@@ -292,7 +293,6 @@
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">修改参数</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <label>标签</label><input id="item_name">
@@ -300,7 +300,7 @@
                                 <label>颜色</label><select id="item_color" onchange="item_color_change();"></select>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-secondary" onclick="changeItem_cancel()">关闭</button>
                                 <button type="button" class="btn btn-primary" onclick="submit_change()">修改</button>
                                 <button type="button" class="btn btn-primary" onclick="delete_item()">删除</button>
                             </div>
@@ -355,20 +355,22 @@
 					}
 
                     function item_color_change() {
-                            item_color.style.background  = item_color.value;
+                        item_color.style.background  = item_color.value;
                     }
 
                     function changeItem(item) {
-                            item_name.value = item.title;
-                            item_size.value = item.value;
-                            if (item.color) {
-                                    item_color.value = item.color;
-                            } else {
-                                    item_color.value = "";
-                            }
+						item_name.value = item.title;
+						item_size.value = item.value;
+						if (item.color) {
+								item_color.value = item.color;
+						} else {
+								item_color.value = "";
+						}
 
-                            item_color.style.background  = item_color.value;
+						item_color.style.background  = item_color.value;
 
+						$('#myModal').modal('show');
+/*
                             myModal = new bootstrap.Modal(document.getElementById('myModal'), {
                                     keyboard: true,
                                     focus:true,
@@ -376,11 +378,14 @@
                             });
 
                             myModal.show();
+*/							
                             //console.log(item);
                     }
 
                     function submit_change() {
-                            myModal.hide();
+                            //myModal.hide();
+							$('#myModal').modal('hide');
+
 
                             shown[shown_index].title = item_name.value;
                             shown[shown_index].value = item_size.value;
@@ -390,10 +395,15 @@
                     }
 
                     function delete_item() {
-                            myModal.hide();
+                            //myModal.hide();
+							$('#myModal').modal('hide');
                             shown.splice(shown_index, 1);
                             refreshProprtion(shown);
                     }
+					
+					function changeItem_cancel() {
+							$('#myModal').modal('hide');
+					}
 
                     function refreshProprtion(cur) {
                         var textGraphWidth = 10;
@@ -416,6 +426,8 @@
 						c.style.height = c.height + "px";
 
                         var ctx=c.getContext("2d");
+						ctx.fillStyle="white";
+						ctx.clearRect(0, 0, c.width, c.height);
                         ctx.font="12px Arial";
                         ctx.textBaseline = 'middle'; //设置文本的垂直对齐方式
                         ctx.textAlign = 'center';//设置文本的水平对齐方式
@@ -430,6 +442,7 @@
 
                                 ctx.fillStyle="black";
                                 ctx.fillText(cur[i].title, c.width/2, itemHeight*(offset+curPos/2));
+								ctx.beginPath();
                                 ctx.rect(0, itemHeight*offset,c.width, itemHeight*curPos);
                                 ctx.stroke();
 
