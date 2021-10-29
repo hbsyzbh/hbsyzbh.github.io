@@ -164,7 +164,7 @@
 
 						var sd_value_low = (limit & 0x0000FFFF)  + ((base & 0x0000FFFF) << 16); 
 						var sd_value_high = ((base & 0x00FF0000) >> 16) + (base & 0xFF000000) +
-											((limit & 0x000F0000) << 16)  +
+											((limit & 0x000F0000))  +
 											((  sd_g.checked ? 1 : 0 ) << 23) +
 											((sd_d_b.checked ? 1 : 0 ) << 22) +
 											((  sd_l.checked ? 1 : 0 ) << 21) +
