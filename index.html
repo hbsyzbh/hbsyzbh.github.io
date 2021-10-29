@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>宝骅的博客</title>
+        <title>宝骅的工具箱</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
@@ -9,9 +9,182 @@
 		<script src="jquery.min.js"></script>
         <script src="bootstrap3\js\bootstrap.js"></script>
         <link href="bootstrap3\css\bootstrap.css" rel="stylesheet">
-        <div>小工具</div>
+<style type="text/css">
+.segmentDescriptor {
+	display:flex;
+	width:95%
+}
+
+.segmentDescriptor div{
+    border:1px solid;
+	text-align:center
+}
+
+.segDesBase {
+	background-color: lightBlue;
+}
+
+.segDesLimit {
+	background-color: lightGreen;
+}
+
+</style>		
         <ul>
-            <li>UTF-8Calc
+			<li><h4>Segment Descriptor</h4>
+                <div class="segmentDescriptor" >
+					<div class="segDesBase" style="width:calc(8/32*100%)">Base 24:31</div>
+					<div style="width:calc(4/32*100%)">G D/B L AVL</div>
+					<div class="segDesLimit" style="width:calc(4/32*100%)">Limit 16:19</div>
+					<div style="width:calc(8/32*100%)">P DPL S X C/E R/W A</div>
+					<div class="segDesBase" style="width:calc(8/32*100%)">Base 16:23</div>
+                </div>
+				<div>
+					63:32 <input id="sd_vh" value="0x00401000" oninput="sd_value_change()">
+				</div>
+				<br>
+                <div class="segmentDescriptor">
+					<div class="segDesBase"   style="width:calc(16/32*100%)">Base 0:15</div>
+					<div class="segDesLimit"  style="width:calc(16/32*100%)">Limit 0:15</div>
+                </div>
+				<div>
+					31:0 <input id="sd_vl" value="0x0000FFFF" oninput="sd_value_change()" >
+				</div>
+				<HR>
+				<div>
+					base<input id="sd_base" class="segDesBase" value="0x00000000" oninput="sd_ctrl_change()">
+					limit<input id="sd_limit" class="segDesLimit"  value="0x0FFFF" oninput="sd_ctrl_change()"> 
+					<input id="sd_g" type="checkbox" onchange="sd_ctrl_change()">G(ranularity)
+				</div>
+				<div>
+					<input type="checkbox" onchange="sd_ctrl_change()" id="sd_d_b" checked="true">D/B(x86/286)
+					<input type="checkbox" onchange="sd_ctrl_change()" id="sd_l">L(64bits)
+					<input type="checkbox" onchange="sd_ctrl_change()" id="sd_p">P(resent)
+					<input type="number" min=0 max=4 onchange="sd_ctrl_change()" id="sd_dpl" value="0">DPL
+				</div>
+				<input type="checkbox" onchange="sd_ctrl_change()" id="sd_s" checked="true">(Non-)S(ystem)
+				<table border="1">
+					<tr>
+						<td>code Executable = 1</td>
+						<td>Conforming</td>
+						<td>Read</td>
+					</tr>
+					<tr>
+						<td>data Executable = 0</td>
+						<td>Extend Direction</td>
+						<td>Write</td>
+					</tr>
+					<tr>
+						<td><input type="checkbox" onchange="sd_ctrl_change()" id="sd_e">Executable</td>
+						<td><input type="checkbox" onchange="sd_ctrl_change()" id="sd_c_e"></td>
+						<td><input type="checkbox" onchange="sd_ctrl_change()" id="sd_r_w"></td>
+					</tr>
+				</table>
+
+                <script type="text/javascript">
+					function formatHex(maxlen, v)
+					{
+						var raw = v.toString(16);
+						var prefix = "";
+						
+						if (raw.length < maxlen) {
+							for(var i = 0; i < maxlen - raw.length; i++) {
+								prefix += "0";
+							}
+						}
+						
+						return prefix + raw;
+					}
+					
+					function format32bit(v)
+					{
+						return "0x" + formatHex(8, v%0x100000000).toUpperCase();
+					}
+					
+					function format20bit(v)
+					{
+						return "0x" + formatHex(5, v%0x100000).toUpperCase();
+					}
+					
+					function sd_value_change() {
+						var sd_value_low = parseInt(sd_vl.value);
+						var sd_value_high = parseInt(sd_vh.value);
+						
+						if (sd_value_low != "Nan") {
+							$("#sd_vl").css("background-color", "");
+						} else {
+							$("#sd_vl").css("background-color", "red");
+							return;
+						}
+						
+						if (sd_value_high != "Nan") {
+							$("#sd_vh").css("background-color", "");
+						} else {
+							$("#sd_vh").css("background-color", "red");
+							return;
+						}
+						
+						console.log("value => ctrl", format32bit(sd_value_high), format32bit(sd_value_low));
+						
+						var base = (sd_value_high & 0xFF000000) + ((sd_value_high & 0x000000FF) << 16) +
+								   ((sd_value_low & 0xFFFF0000) >>> 16);
+						var limit = (sd_value_high & 0x000F0000) +
+								   ((sd_value_low & 0x0000FFFF));
+						
+						var G 	= (sd_value_high & 0x00800000)  >> (20 + 3);
+						var D_b = (sd_value_high & 0x00400000)  >> (20 + 2);
+						var L 	= (sd_value_high & 0x00200000)  >> (20 + 1);
+						var AVL	= (sd_value_high & 0x00100000)  >> (20 + 0);
+
+						var P 	= (sd_value_high & 0x00008000)  >> (8 + 7);
+						var DPL = (sd_value_high & 0x00006000)  >> (8 + 5);
+						var S 	= (sd_value_high & 0x00001000)  >> (8 + 4);
+						var EX	= (sd_value_high & 0x00000800)  >> (8 + 3);
+						var C_E	= (sd_value_high & 0x00000400)  >> (8 + 2);
+						var RW	= (sd_value_high & 0x00000200)  >> (8 + 1);
+
+						sd_base.value = format32bit(base);
+						sd_limit.value = format20bit(limit);
+						
+						sd_g.checked	= (G != 0);
+						sd_d_b.checked	= (D_b != 0);
+						sd_l.checked	= (L != 0);
+						
+						sd_p.checked	= (P != 0);
+						sd_dpl.value	= DPL;
+						sd_s.checked	= (S != 0);
+						sd_e.checked	= (EX != 0);
+						sd_c_e.checked	= (C_E != 0);
+						sd_r_w.checked	= (RW != 0);
+					}
+
+					function sd_ctrl_change() {
+						var base 	= parseInt( sd_base.value);
+						var limit 	= parseInt(sd_limit.value);
+						
+
+						var sd_value_low = (limit & 0x0000FFFF)  + ((base & 0x0000FFFF) << 16); 
+						var sd_value_high = ((base & 0x00FF0000) >> 16) + (base & 0xFF000000) +
+											((limit & 0x000F0000) << 16)  +
+											((  sd_g.checked ? 1 : 0 ) << 23) +
+											((sd_d_b.checked ? 1 : 0 ) << 22) +
+											((  sd_l.checked ? 1 : 0 ) << 21) +
+											((                     0 ) << 20) +
+											((  sd_p.checked ? 1 : 0 ) << 15) +
+											((  sd_dpl.value         ) << 13) +
+											((  sd_s.checked ? 1 : 0 ) << 12) +
+											((  sd_e.checked ? 1 : 0 ) << 11) +
+											((sd_c_e.checked ? 1 : 0 ) << 10) +
+											((sd_r_w.checked ? 1 : 0 ) <<  9) +
+											((                     0 ) <<  8);
+
+						console.log("ctrl => value", format32bit(base), format20bit(limit));
+						sd_vl.value = format32bit(sd_value_low);
+						sd_vh.value = format32bit(sd_value_high);
+					}
+                </script>
+            </li>
+			
+            <li><h4>UTF-8Calc</h4>
                 <table class="table">
           <thead>
             <tr>
@@ -105,7 +278,7 @@
        x bits are filled in.
      -->
             </li>
-            <li>MultiCastCalc
+            <li><h4>MultiCastCalc</h4>
                 <div class="row">
                 <div class="col-sm-6">
                 <table class="table">
@@ -273,7 +446,7 @@
             </div><!-- end of row -->
             </li>
 
-            <li><p>Proportion <button onclick="ProportionExample()">例子(example)</button></p>
+            <li><h4>Proportion <button onclick="ProportionExample()">例子(example)</button><h4>
                 <div>
                     <input value="name" id="proportion_title"><input type="number" value="1" id="proportion_part"><button onclick="addProprtion()">增加</button>
                 </div>
@@ -512,9 +685,8 @@
 
                 </script>
             </li>
-
         </ul>
-        <div>博文</div>
+       <div>宝骅的工具箱</div>
 
     </body>
     <script type="text/javascript">
