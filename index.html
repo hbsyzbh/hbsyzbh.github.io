@@ -83,7 +83,7 @@
                 <script type="text/javascript">
 					function formatHex(maxlen, v)
 					{
-						var raw = v.toString(16);
+						var raw = (v >>> 0).toString(16);
 						var prefix = "";
 						
 						if (raw.length < maxlen) {
