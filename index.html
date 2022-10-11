@@ -100,6 +100,7 @@
 
 	function makeFruitMonth(fruit, monthes, m)
 	{
+		var sum_class = "col-xs-1 col-sm-1 col-lg-1"
 		var m_class = "col-xs-2 col-sm-1 col-lg-1"
 
 		var pre_m = document.createElement("div");
@@ -108,8 +109,8 @@
 		
 		var f_div = document.createElement("div");
 
-		pre_m.innerHTML = getPreMonth(m)+ "月";
-		pre_m.className  += m_class;
+		pre_m.innerHTML = getPreMonth(m);
+		pre_m.className  += sum_class;
 		if (monthes[getPreMonth(m)-1])
 			pre_m.style.backgroundColor = "green";
 
@@ -118,14 +119,14 @@
 		if (monthes[m-1])
 			cur_m.style.backgroundColor = "green";
 
-		next_m.innerHTML = getNextMonth(m)+ "月";
-		next_m.className  += m_class;
+		next_m.innerHTML = getNextMonth(m);
+		next_m.className  += sum_class;
 		if (monthes[getNextMonth(m)-1])
 			next_m.style.backgroundColor = "green";
 			
 		
 		var nextmore = makeNextMore(fruit, monthes, m);
-		nextmore.className  += "col-xs-6 col-sm-6 col-lg-6";
+		nextmore.className  += "col-xs-8 col-sm-6 col-lg-6";
 
 		f_div.append(pre_m)
 		f_div.append(cur_m)
