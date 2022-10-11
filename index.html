@@ -14,11 +14,18 @@
 	text-align: center;
 }
 
+.col-nextmore {
+	width:11.11%;
+	float: left;
+}
+
 </style>
+<div class="container">
 <div id="curTime">
 当前系统不兼容此js脚本
 </div>
 <div id="output">
+</div>
 </div>
 	<script type="text/javascript">
 
@@ -69,14 +76,36 @@
 
 		return m;
 	}
+	
+	function makeNextMore(fruit, monthes, m)
+	{
+		var more_class = "col-nextmore";
+		var next_more = document.createElement("div");
+		var cur_m = getNextMonth(m);
+
+		for (i = 0; i < 9; i++){
+			var tmp = document.createElement("div");
+
+			cur_m = getNextMonth(cur_m);
+			
+			tmp.className = more_class;
+			tmp.innerHTML = cur_m;
+			if (monthes[cur_m-1])
+				tmp.style.backgroundColor = "green";
+			next_more.append(tmp);
+		}
+		
+		return next_more;
+	}
 
 	function makeFruitMonth(fruit, monthes, m)
 	{
-		var m_class = "col-xs-3 col-sm-2 col-lg-1"
+		var m_class = "col-xs-2 col-sm-1 col-lg-1"
 
 		var pre_m = document.createElement("div");
 		var cur_m = document.createElement("div");
 		var next_m = document.createElement("div");
+		
 		var f_div = document.createElement("div");
 
 		pre_m.innerHTML = getPreMonth(m)+ "月";
@@ -93,10 +122,15 @@
 		next_m.className  += m_class;
 		if (monthes[getNextMonth(m)-1])
 			next_m.style.backgroundColor = "green";
+			
+		
+		var nextmore = makeNextMore(fruit, monthes, m);
+		nextmore.className  += "col-xs-6 col-sm-6 col-lg-6";
 
 		f_div.append(pre_m)
 		f_div.append(cur_m)
 		f_div.append(next_m)
+		f_div.append(nextmore)
 		f_div.className  += "row";
 		return f_div;
 	}
