@@ -101,7 +101,7 @@
 	function makeFruitMonth(fruit, monthes, m)
 	{
 		var sum_class = "col-xs-1 col-sm-1 col-lg-1"
-		var m_class = "col-xs-2 col-sm-1 col-lg-1"
+		var m_class = "col-xs-4 col-sm-1 col-lg-1"
 
 		var pre_m = document.createElement("div");
 		var cur_m = document.createElement("div");
@@ -126,7 +126,7 @@
 			
 		
 		var nextmore = makeNextMore(fruit, monthes, m);
-		nextmore.className  += "col-xs-8 col-sm-6 col-lg-6";
+		nextmore.className  += "col-xs-6 col-sm-6 col-lg-6";
 
 		f_div.append(pre_m)
 		f_div.append(cur_m)
