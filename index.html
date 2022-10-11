@@ -13,10 +13,11 @@
 * {
 	text-align: center;
 }
+
 </style>
 <div id="curTime">
 当前系统不兼容此js脚本
-<div>
+</div>
 <div id="output">
 </div>
 	<script type="text/javascript">
@@ -36,8 +37,71 @@
 				fruit[cur_f][i] = true;
 			}
 		}
+
+		$("#output").empty();
+		for (f in fruit) {
+			var f_div = makeFruitMonth(f,fruit[f],m);
+			if (fruit[f][m-1])
+				$("#output").prepend(f_div);
+			else
+				$("#output").append(f_div);
+		}
 	});
-	
+
+	function getPreMonth(m)
+	{
+		if (m == 1) {
+			m = 12;
+		} else {
+			m = m - 1;
+		}
+
+		return m;
+	}
+
+	function getNextMonth(m)
+	{
+		if (m == 12) {
+			m = 1;
+		} else {
+			m = m + 1;
+		}
+
+		return m;
+	}
+
+	function makeFruitMonth(fruit, monthes, m)
+	{
+		var m_class = "col-xs-3 col-sm-2 col-lg-1"
+
+		var pre_m = document.createElement("div");
+		var cur_m = document.createElement("div");
+		var next_m = document.createElement("div");
+		var f_div = document.createElement("div");
+
+		pre_m.innerHTML = getPreMonth(m)+ "月";
+		pre_m.className  += m_class;
+		if (monthes[getPreMonth(m)-1])
+			pre_m.style.backgroundColor = "green";
+
+		cur_m.innerHTML = fruit;
+		cur_m.className  += m_class;
+		if (monthes[m-1])
+			cur_m.style.backgroundColor = "green";
+
+		next_m.innerHTML = getNextMonth(m)+ "月";
+		next_m.className  += m_class;
+		if (monthes[getNextMonth(m)-1])
+			next_m.style.backgroundColor = "green";
+
+		f_div.append(pre_m)
+		f_div.append(cur_m)
+		f_div.append(next_m)
+		f_div.className  += "row";
+		return f_div;
+	}
+
+
 	var monthly_fruit = [
 	{"fruit":["葡萄柚","木瓜","香蕉","樱桃","番茄","杨桃","柑橘橙","青枣","甘蔗","草莓","番石榴","牛奶蕉","柑桔","无花果"]},
 	{"fruit":["葡萄柚","木瓜","香蕉","樱桃","杨桃","番荔枝","青枣","甘蔗","草莓","番石榴","牛奶蕉","柑桔"]},
