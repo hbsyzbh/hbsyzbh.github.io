@@ -15,8 +15,14 @@
 }
 
 .col-nextmore {
-	width:25%;
 	float: left;
+	width:25%;
+}
+
+@media (min-width: 768px) {
+.col-nextmore {
+	width:11.11%;
+}
 }
 
 .title {
@@ -118,8 +124,13 @@
 		var more_class = "col-nextmore";
 		var next_more = document.createElement("div");
 		var cur_m = getNextMonth(m);
+		var more_mounth = 4;
+		
+		if (document.body.clientWidth >= 768) {
+			more_mounth = 9;
+		}
 
-		for (i = 0; i < 4; i++){
+		for (i = 0; i < more_mounth; i++){
 			var tmp = document.createElement("div");
 
 			cur_m = getNextMonth(cur_m);
