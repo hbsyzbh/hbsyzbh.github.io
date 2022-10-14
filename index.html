@@ -19,22 +19,65 @@
 	float: left;
 }
 
+.title {
+	width:50%;
+	float: left;
+	height:72px;
+}
+
+.nomargin {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+#filter {
+	width:100%;
+	height:100%;
+	font-size: 36px;
+}
 </style>
+
 <div class="container">
-<div id="curTime">
+<div class="row">
+<div id="curTime" class="title col-lg-6">
 当前系统不兼容此js脚本
+</div>
+<div class="title col-lg-6">
+<input id="filter" placeholder="过滤" oninput="filter_change()">
+</div>
 </div>
 <div id="output">
 </div>
 </div>
 	<script type="text/javascript">
+	var d = new Date();
+	var m = d.getMonth() + 1;
+	var fruit = [];
+
+	function filter_change()
+	{
+		//console.log($("#filter").val());
+		show_result($("#filter").val());
+	}
+
+	function show_result(filter)
+	{
+		$("#output").empty();
+		for (f in fruit) {
+			var f_div = makeFruitMonth(f,fruit[f],m);
+
+			if ((filter == "") || (f.match(filter)))
+			{
+				if (fruit[f][m-1])
+					$("#output").prepend(f_div);
+				else
+					$("#output").append(f_div);
+			}
+		}
+	}
 
 	$(function(){
-		var d = new Date();
-		var m = d.getMonth() + 1;
 		$("#curTime").empty().append($("<h1></h1>").text(m + "月"))
-
-		fruit = [];
 		for (i = 0; i < monthly_fruit.length; i++) {
 			for (f = 0; f < monthly_fruit[i]["fruit"].length; f++) {
 				var cur_f = monthly_fruit[i]["fruit"][f];
@@ -44,15 +87,8 @@
 				fruit[cur_f][i] = true;
 			}
 		}
-
-		$("#output").empty();
-		for (f in fruit) {
-			var f_div = makeFruitMonth(f,fruit[f],m);
-			if (fruit[f][m-1])
-				$("#output").prepend(f_div);
-			else
-				$("#output").append(f_div);
-		}
+		
+		show_result("");
 	});
 
 	function getPreMonth(m)
@@ -126,7 +162,7 @@
 			
 		
 		var nextmore = makeNextMore(fruit, monthes, m);
-		nextmore.className  += "col-xs-6 col-sm-6 col-lg-6";
+		nextmore.className  += "col-xs-6 col-sm-6 col-lg-6 nomargin";
 
 		f_div.append(pre_m)
 		f_div.append(cur_m)
