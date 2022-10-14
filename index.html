@@ -125,7 +125,7 @@
 			cur_m = getNextMonth(cur_m);
 			
 			tmp.className = more_class;
-			tmp.innerHTML = cur_m;
+			tmp.innerHTML = cur_m + "月";
 			if (monthes[cur_m-1])
 				tmp.style.backgroundColor = "green";
 			next_more.append(tmp);
@@ -145,7 +145,7 @@
 		
 		var f_div = document.createElement("div");
 
-		pre_m.innerHTML = getPreMonth(m);
+		pre_m.innerHTML = getPreMonth(m)+ "月";
 		pre_m.className  += sum_class;
 		if (monthes[getPreMonth(m)-1])
 			pre_m.style.backgroundColor = "green";
@@ -155,7 +155,7 @@
 		if (monthes[m-1])
 			cur_m.style.backgroundColor = "green";
 
-		next_m.innerHTML = getNextMonth(m);
+		next_m.innerHTML = getNextMonth(m)+ "月";
 		next_m.className  += sum_class;
 		if (monthes[getNextMonth(m)-1])
 			next_m.style.backgroundColor = "green";
