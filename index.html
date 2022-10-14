@@ -15,7 +15,7 @@
 }
 
 .col-nextmore {
-	width:11.11%;
+	width:25%;
 	float: left;
 }
 
@@ -119,7 +119,7 @@
 		var next_more = document.createElement("div");
 		var cur_m = getNextMonth(m);
 
-		for (i = 0; i < 9; i++){
+		for (i = 0; i < 4; i++){
 			var tmp = document.createElement("div");
 
 			cur_m = getNextMonth(cur_m);
@@ -136,7 +136,7 @@
 
 	function makeFruitMonth(fruit, monthes, m)
 	{
-		var sum_class = "col-xs-1 col-sm-1 col-lg-1"
+		var sum_class = "col-xs-2 col-sm-1 col-lg-1"
 		var m_class = "col-xs-4 col-sm-1 col-lg-1"
 
 		var pre_m = document.createElement("div");
@@ -162,7 +162,7 @@
 			
 		
 		var nextmore = makeNextMore(fruit, monthes, m);
-		nextmore.className  += "col-xs-6 col-sm-6 col-lg-6 nomargin";
+		nextmore.className  += "col-xs-4 col-sm-6 col-lg-6 nomargin";
 
 		f_div.append(pre_m)
 		f_div.append(cur_m)
