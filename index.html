@@ -5,7 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
+    <body onresize="onresize()">
 		<script src="jquery.min.js"></script>
         <script src="bootstrap3\js\bootstrap.js"></script>
         <link href="bootstrap3\css\bootstrap.css" rel="stylesheet">
@@ -19,10 +19,22 @@
 	width:25%;
 }
 
-@media (min-width: 768px) {
-.col-nextmore {
-	width:11.11%;
-}
+@media (min-width: 600px) {
+	.col-nextmore {
+		width:11.11%;
+	}
+	
+	.pre_next {
+		width:12.5%;	
+	}
+	
+	.m_f {
+		width:25%;
+	}
+
+	.nomargin {
+		width:50%;
+	}
 }
 
 .title {
@@ -59,7 +71,17 @@
 	var d = new Date();
 	var m = d.getMonth() + 1;
 	var fruit = [];
+	var lastWidth = 0;
+	var tinyWindows = 600;
 
+	function onresize()
+	{ 
+		if (lastWidth == 0) return;
+		if ((lastWidth  < tinyWindows) ^ (document.body.clientWidth < tinyWindows )) {
+			filter_change();
+		}
+	}
+	
 	function filter_change()
 	{
 		//console.log($("#filter").val());
@@ -80,6 +102,8 @@
 					$("#output").append(f_div);
 			}
 		}
+		
+		lastWidth = document.body.clientWidth;
 	}
 
 	$(function(){
@@ -126,7 +150,7 @@
 		var cur_m = getNextMonth(m);
 		var more_mounth = 4;
 		
-		if (document.body.clientWidth >= 768) {
+		if (document.body.clientWidth >= tinyWindows) {
 			more_mounth = 9;
 		}
 
@@ -147,8 +171,8 @@
 
 	function makeFruitMonth(fruit, monthes, m)
 	{
-		var sum_class = "col-xs-2 col-sm-1 col-lg-1"
-		var m_class = "col-xs-4 col-sm-1 col-lg-1"
+		var sum_class = "col-xs-2 col-sm-1 col-lg-1 pre_next"
+		var m_class = "col-xs-4 col-sm-1 col-lg-1 m_f"
 
 		var pre_m = document.createElement("div");
 		var cur_m = document.createElement("div");
