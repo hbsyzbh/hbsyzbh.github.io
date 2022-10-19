@@ -88,18 +88,36 @@
 		show_result($("#filter").val());
 	}
 
+	function goodmonth(fm)
+	{
+		var count = 0;
+		for (i in fm) {
+			if (fm[i]) {
+				count++;
+			}
+		}
+
+		return count;
+	}
+
 	function show_result(filter)
 	{
 		$("#output").empty();
+		$("#output").append("<div id='spliter' ></div>");
 		for (f in fruit) {
 			var f_div = makeFruitMonth(f,fruit[f],m);
 
 			if ((filter == "") || (f.match(filter)))
 			{
-				if (fruit[f][m-1])
-					$("#output").prepend(f_div);
-				else
+				if (fruit[f][m-1]) {
+					if (1==goodmonth(fruit[f])){
+						$("#spliter").before(f_div);
+					} else {
+						$("#spliter").after(f_div);
+					}
+				} else {
 					$("#output").append(f_div);
+				}
 			}
 		}
 		
@@ -117,7 +135,7 @@
 				fruit[cur_f][i] = true;
 			}
 		}
-		
+
 		show_result("");
 	});
 
